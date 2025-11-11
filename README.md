@@ -2,7 +2,7 @@
 
 Este diretório contém todo o código de Infraestrutura como Código (IaC) para o projeto, utilizando [Terraform](https://www.terraform.io/) para provisionar e gerenciar os recursos na nuvem da AWS.
 
-O objetivo é criar um ambiente robusto, seguro e escalável para hospedar a aplicação, utilizando um cluster Kubernetes gerenciado (EKS) e um banco de dados relacional externo (RDS).
+O objetivo é criar um ambiente robusto, seguro e escalável para hospedar a aplicação, utilizando um cluster Kubernetes gerenciado (EKS).
 
 ## 🏛️ Arquitetura e Recursos Criados
 
@@ -31,8 +31,9 @@ A base da nossa infraestrutura, focada em segurança e alta disponibilidade.
 
 Controla o tráfego entre os recursos, atuando como um firewall virtual.
 
-- **Security Group para EKS (`eks-nodes-sg`):** Um grupo para os nós de trabalho do Kubernetes, permitindo que eles se comuniquem e acessem a internet.
-- **Security Group para RDS (`rds-sg`):** Um grupo para o banco de dados, altamente restritivo. A regra principal permite acesso **apenas** na porta `5432` (PostgreSQL) e **somente** se a origem for o Security Group dos nós do EKS.
+- **Security Group para EKS (`eks-nodes-sg`):** Um grupo para os nós de trabalho do Kubernetes, permite tráfego de entrada _apenas_ do ALB interno na porta do NodePort.
+- **Security Group para ALB (`alb-internal-sg`):** Permite tráfego de entrada na porta 80 (do API Gateway) e de saída para os EKS nodes.
+- **Security Group para RDS (`rds-sg`):** Um grupo para o banco de dados, altamente restritivo. A regra principal permite acesso **apenas** na porta `5432` (PostgreSQL) e **somente** se a origem for das sub-redes privadas (private_subnet_cidrs).
 
 ### 4. Cluster Kubernetes (Módulo `eks`)
 
@@ -41,12 +42,14 @@ O ambiente de orquestração de contêineres onde nossa aplicação será execut
 - **EKS Control Plane:** A camada de gerenciamento do Kubernetes, provisionada e mantida pela AWS.
 - **EKS Node Group:** Um grupo de instâncias EC2 (`t3.medium`) que atuam como os "worker nodes". Eles são provisionados nas subnets privadas para máxima segurança.
 
-### 5. Banco de Dados (Módulo `rds`)
+### 5. API Gateway e Roteamento (Módulo `api-gateway`)
 
-Um serviço de banco de dados PostgreSQL gerenciado, seguro e escalável.
+Controla todo o tráfego de entrada, agindo como o portão principal da aplicação.
 
-- **Instância RDS:** Uma instância `db.t3.micro` executando PostgreSQL.
-- **Posicionamento Seguro:** A instância é criada dentro das subnets privadas, garantindo que ela não seja acessível diretamente pela internet.
+- **API Gateway (HTTP API):** Cria um endpoint público único para todos os serviços.
+- **Application Load Balancer (ALB):** Um ALB _interno_ (privado) é criado para receber tráfego do API Gateway e distribuí-lo para o EKS.
+- **VPC Link:** O componente que conecta o API Gateway (público) ao ALB (privado) de forma segura.
+- **Roteamento:** As rotas `ANY /auth/{proxy+}` são enviadas para a Lambda de autenticação, enquanto a rota `$default` (todo o resto) é enviada para o EKS via ALB.
 
 ### 6. Container Registry (Módulo `ecr`)
 
@@ -116,4 +119,10 @@ Um serviço de banco de dados PostgreSQL gerenciado, seguro e escalável.
 
     # Exibe os endpoints e nomes criados
     terraform output
+    ```
+
+    O output mais importante é o `api_gateway_endpoint`. Este é o novo endereço público único para acessar _toda_ a sua aplicação (tanto a autenticação quanto a API principal).
+
+    ```bash
+    terraform output api_gateway_endpoint
     ```
