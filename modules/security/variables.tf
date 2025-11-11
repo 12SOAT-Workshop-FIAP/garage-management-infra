@@ -10,3 +10,8 @@ variable "private_subnet_cidrs" {
   description = "CIDR blocks for the private subnets to allow DB access from"
   type        = list(string)
 }
+
+variable "app_node_port" {
+  description = "Porta NodePort do K8s."
+  type        = number
+}

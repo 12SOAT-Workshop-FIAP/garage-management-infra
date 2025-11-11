@@ -3,6 +3,13 @@ resource "aws_security_group" "eks_nodes" {
   description = "Permite comunicacao para os worker nodes do EKS."
   vpc_id      = var.vpc_id
 
+  ingress {
+    from_port       = var.app_node_port
+    to_port         = var.app_node_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_internal.id]
+  }
+
   # Regra de saída: permite que os nodes acessem a internet
   egress {
     from_port   = 0
@@ -13,6 +20,30 @@ resource "aws_security_group" "eks_nodes" {
 
   tags = {
     Name = "${var.project_name}-eks-nodes-sg"
+  }
+}
+
+resource "aws_security_group" "alb_internal" {
+  name        = "${var.project_name}-alb-internal-sg"
+  description = "SG para o ALB Interno"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port       = var.app_node_port
+    to_port         = var.app_node_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.eks_nodes.id]
+  }
+
+  tags = {
+    Name = "${var.project_name}-alb-internal-sg"
   }
 }
 
