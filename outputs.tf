@@ -12,3 +12,13 @@ output "ecr_repository_url" {
   description = "URL do repositorio ECR para as imagens Docker."
   value       = module.ecr.repository_url
 }
+
+output "private_subnet_ids" {
+  description = "IDs das subnets privadas para o RDS."
+  value       = module.vpc.private_subnet_ids
+}
+
+output "rds_security_group_id" {
+  description = "ID do Security Group do RDS (criado pelo módulo security)."
+  value       = module.security.rds_sg_id
+}
