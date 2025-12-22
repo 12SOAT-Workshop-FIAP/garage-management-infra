@@ -55,9 +55,7 @@ jobs:
 
       - name: 6. Terraform Plan
         id: plan
-        env:
         run: terraform plan -input=false
 
       - name: 7. Terraform Apply
-        env:
         run: terraform apply -auto-approve -input=false
