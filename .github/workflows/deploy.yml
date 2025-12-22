@@ -1,0 +1,63 @@
+name: CI/CD - Deploy Infraestructure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "garage-management-infra/**"
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  TF_WORKING_DIR: garage-management-infra
+  TF_VERSION: 1.5.7
+  TF_VAR_lambda_auth_arn: teste-auth
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform Provisioning
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+      - name: 1. Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 2. Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: 3. Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: 4. Terraform Init
+        id: init
+        run: terraform init
+
+      - name: 5. Terraform Validate & Format
+        run: |
+          terraform fmt -check
+          terraform validate
+
+      - name: 6. Terraform Plan
+        id: plan
+        env:
+        run: terraform plan -input=false
+
+      - name: 7. Terraform Apply
+        env:
+        run: terraform apply -auto-approve -input=false

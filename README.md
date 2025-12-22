@@ -62,7 +62,35 @@ Controla todo o tráfego de entrada, agindo como o portão principal da aplicaç
 1.  **Terraform CLI:** [Instalado](https://learn.hashicorp.com/tutorials/terraform/install-cli) na sua máquina.
 2.  **AWS CLI:** [Instalado](https://aws.amazon.com/cli/) e [configurado](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html) com as credenciais do ambiente AWS.
 
-### Passos para Execução
+### Configuração Inicial (Backend Remoto)
+
+Passo Obrigatório: Antes de rodar qualquer automação, é necessário criar os recursos que armazenarão o estado do Terraform (Bucket S3 e DynamoDB Lock).
+```bash
+cd backend
+terraform init
+terraform apply
+```
+
+### Deploy Automatizado (CI/CD via GitHub Actions)
+Esta é a forma recomendada para ambientes de produção (branch main).
+
+1.  **Configure os Secrets no GitHub:**
+No seu repositório, vá em Settings > Secrets and variables > Actions e adicione:
+    ```bash
+    AWS_ACCESS_KEY_ID: Sua Access Key da AWS.
+    AWS_SECRET_ACCESS_KEY: Sua Secret Key da AWS.
+    AWS_SESSION_TOKEN: Necessário se estiver usando credenciais temporárias.
+    LAMBDA_AUTH_ARN: O ARN da sua função Lambda de autenticação.
+    ```
+
+2.  **Dispare o Deploy:**
+Faça qualquer alteração na pasta garage-management-infra e dê push na branch main.
+O pipeline iniciará automaticamente:
+    - Validação e Plan: Ocorrem automaticamente.
+    - Apply: Ocorre automaticamente após o sucesso do plano.
+Acompanhe a execução na aba Actions do GitHub.
+
+### Execução Manual (Desenvolvimento Local)
 
 1.  **Provisionar o Backend:**
     Primeiro, crie os recursos para o estado remoto.
