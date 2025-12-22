@@ -22,7 +22,7 @@ A base da nossa infraestrutura, focada em segurança e alta disponibilidade.
 - **VPC:** Uma rede virtual privada (`10.0.0.0/16`) para isolar nossos recursos.
 - **Subnets:** Quatro subnets distribuídas em duas Zonas de Disponibilidade (`us-east-1a` e `us-east-1b`) para garantir resiliência:
   - **2 Subnets Públicas:** Para recursos que precisam de acesso à internet, como o NAT Gateway.
-  - **2 Subnets Privadas:** Para recursos que devem permanecer isolados e seguros, como os nós do Kubernetes e o banco de dados.
+  - **2 Subnets Privadas:** Para recursos que devem permanecer isolados e seguros, como os nós do Kubernetes.
 - **Internet Gateway:** Permite a comunicação de saída para a internet a partir das subnets públicas.
 - **NAT Gateway:** Permite que os recursos nas subnets privadas (nós do EKS) iniciem conexões com a internet (ex: para baixar imagens Docker) sem serem expostos publicamente.
 - **Route Tables:** Gerenciam o tráfego, direcionando o fluxo das subnets de acordo.
@@ -68,7 +68,7 @@ Controla todo o tráfego de entrada, agindo como o portão principal da aplicaç
     Primeiro, crie os recursos para o estado remoto.
 
     ```bash
-    cd infra/backend
+    cd backend
     terraform init
     terraform apply
     ```
@@ -76,7 +76,7 @@ Controla todo o tráfego de entrada, agindo como o portão principal da aplicaç
 2.  **Navegue até o diretório principal:**
 
     ```bash
-    cd infra
+    cd ..
     ```
 
 3.  **Crie o arquivo de variáveis:**
