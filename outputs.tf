@@ -18,6 +18,11 @@ output "private_subnet_ids" {
   value       = module.vpc.private_subnet_ids
 }
 
+output "public_subnet_ids" {
+  description = "IDs das subnets públicas (necessário para acesso externo ao RDS)."
+  value       = module.vpc.public_subnet_ids
+}
+
 output "rds_security_group_id" {
   description = "ID do Security Group do RDS (criado pelo módulo security)."
   value       = module.security.rds_sg_id
