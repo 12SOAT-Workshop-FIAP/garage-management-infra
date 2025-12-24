@@ -85,6 +85,14 @@ resource "aws_apigatewayv2_integration" "eks_app" {
   integration_uri = aws_lb_listener.alb_listener.arn
 }
 
+resource "aws_lambda_permission" "api_gw_auth" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = var.lambda_auth_arn
+  principal     = "apigateway.amazonaws.com"
+  source_arn = "${aws_apigatewayv2_api.main.execution_arn}/*/*"
+}
+
 # --- Criar as Rotas ---
 
 # Rotas de /auth/* vão para a Lambda
