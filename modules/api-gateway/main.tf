@@ -1,10 +1,3 @@
-data "aws_instances" "eks_nodes" {
-  filter {
-    name   = "tag:eks:cluster-name"
-    values = [var.eks_cluster_name]
-  }
-}
-
 resource "aws_lb" "internal_alb" {
   name               = "${var.project_name}-internal-alb"
   internal           = true
@@ -33,11 +26,21 @@ resource "aws_lb_target_group" "eks_app_tg" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "eks_nodes_attach" {
-  count            = length(data.aws_instances.eks_nodes.ids)
-  target_group_arn = aws_lb_target_group.eks_app_tg.arn
-  target_id        = data.aws_instances.eks_nodes.ids[count.index]
-  port             = var.app_node_port
+data "aws_autoscaling_groups" "eks_groups" {
+  filter {
+    name   = "key"
+    values = ["eks:cluster-name"]
+  }
+  filter {
+    name   = "value"
+    values = [var.eks_cluster_name]
+  }
+}
+
+resource "aws_autoscaling_attachment" "eks_asg_attachment" {
+  count                  = length(data.aws_autoscaling_groups.eks_groups.names)
+  autoscaling_group_name = data.aws_autoscaling_groups.eks_groups.names[count.index]
+  lb_target_group_arn    = aws_lb_target_group.eks_app_tg.arn
 }
 
 resource "aws_lb_listener" "alb_listener" {
@@ -79,7 +82,7 @@ resource "aws_apigatewayv2_integration" "eks_app" {
   connection_type = "VPC_LINK"
   connection_id   = aws_apigatewayv2_vpc_link.eks_vpc_link.id
 
-  integration_uri = aws_lb_listener.alb_listener.arn
+  integration_uri = "http://${aws_lb.internal_alb.dns_name}"
 }
 
 # --- Criar as Rotas ---
