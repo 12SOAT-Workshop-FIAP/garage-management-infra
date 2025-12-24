@@ -9,10 +9,8 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION: us-east-1
-  TF_WORKING_DIR: garage-management-infra
-  TF_VERSION: 1.5.7
-  TF_VAR_lambda_auth_arn: teste-auth
+  TF_VAR_lambda_auth_arn: ${{ secrets.LAMBDA_ARN }}
+
 
 permissions:
   id-token: write
@@ -25,7 +23,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ${{ env.TF_WORKING_DIR }}
+        working-directory: garage-management-infra
 
     steps:
       - name: 1. Checkout Code
@@ -42,7 +40,7 @@ jobs:
       - name: 3. Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: ${{ env.TF_VERSION }}
+          terraform_version: 1.5.7
 
       - name: 4. Terraform Init
         id: init
