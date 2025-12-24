@@ -34,11 +34,13 @@ resource "helm_release" "metrics_server" {
   chart      = "metrics-server"
   namespace  = "kube-system"
   version    = "3.12.1"
-
-  set {
-    name  = "metrics.enabled"
-    value = "true"
-  }
+  
+  set = [
+    {
+      name  = "metrics.enabled"
+      value = "true"
+    }
+  ]
 
   depends_on = [aws_eks_node_group.main]
 }
