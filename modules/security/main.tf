@@ -3,14 +3,7 @@ resource "aws_security_group" "eks_nodes" {
   description = "Permite comunicacao para os worker nodes do EKS."
   vpc_id      = var.vpc_id
 
-  ingress {
-    from_port       = var.app_node_port
-    to_port         = var.app_node_port
-    protocol        = "tcp"
-    security_groups = [aws_security_group.alb_internal.id]
-  }
-
-  # Regra de saída: permite que os nodes acessem a internet
+  # Regra de saída: permite que os nodes acessem a internet (Mantida aqui pois não causa ciclo)
   egress {
     from_port   = 0
     to_port     = 0
@@ -35,19 +28,31 @@ resource "aws_security_group" "alb_internal" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  egress {
-    from_port       = var.app_node_port
-    to_port         = var.app_node_port
-    protocol        = "tcp"
-    security_groups = [aws_security_group.eks_nodes.id]
-  }
-
   tags = {
     Name = "${var.project_name}-alb-internal-sg"
   }
 }
 
-# Security Group para o Banco de Dados RDS
+# Regra de Ingress do EKS: Aceita tráfego vindo do ALB
+resource "aws_security_group_rule" "eks_nodes_ingress_alb" {
+  type                     = "ingress"
+  from_port                = var.app_node_port
+  to_port                  = var.app_node_port
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.alb_internal.id
+  security_group_id        = aws_security_group.eks_nodes.id
+}
+
+# Regra de Egress do ALB: Envia tráfego para o EKS
+resource "aws_security_group_rule" "alb_internal_egress_eks" {
+  type                     = "egress"
+  from_port                = var.app_node_port
+  to_port                  = var.app_node_port
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.eks_nodes.id
+  security_group_id        = aws_security_group.alb_internal.id
+}
+
 resource "aws_security_group" "rds" {
   name        = "${var.project_name}-rds-sg"
   description = "Permite acesso ao banco de dados RDS."
@@ -57,10 +62,9 @@ resource "aws_security_group" "rds" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = var.private_subnet_cidrs # Permite tráfego das sub-redes privadas
+    cidr_blocks = var.private_subnet_cidrs
   }
 
-  # Regra de saída: permite que o RDS acesse a internet.
   egress {
     from_port   = 0
     to_port     = 0
