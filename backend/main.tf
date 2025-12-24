@@ -5,7 +5,7 @@ provider "aws" {
 variable "s3_bucket_name" {
   description = "Nome do bucket S3 para o estado do Terraform"
   type        = string
-  default     = "garagemanagement-terraform-backend"
+  default     = "garagemanagement-terraform-backend-1"
 }
 
 resource "aws_s3_bucket" "terraform_state" {
