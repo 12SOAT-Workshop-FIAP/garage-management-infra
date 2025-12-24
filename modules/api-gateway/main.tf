@@ -89,7 +89,3 @@ resource "awsapigatewayv2_stage" "default" {
   name        = "$default"
   auto_deploy = true
 }
-
-output "api_gateway_endpoint" {
-  value = awsapigatewayv2_stage.default.invoke_url
-}
