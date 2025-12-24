@@ -39,9 +39,10 @@ resource "aws_lb_listener" "alb_listener" {
   }
 }
 
-resource "aws_api_gateway_vpc_link" "eks_vpc_link" {
-  name        = "${var.project_name}-vpc-link"
-  target_arns = [aws_lb.internal_alb.arn]
+resource "aws_apigatewayv2_vpc_link" "eks_vpc_link" {
+  name               = "${var.project_name}-vpc-link"
+  security_group_ids = [var.alb_security_group_id]
+  subnet_ids         = var.private_subnet_ids
 }
 
 resource "aws_apigatewayv2_api" "main" {
@@ -64,7 +65,7 @@ resource "aws_apigatewayv2_integration" "eks_app" {
   integration_method = "ANY"
 
   connection_type = "VPC_LINK"
-  connection_id   = aws_api_gateway_vpc_link.eks_vpc_link.id
+  connection_id   = aws_apigatewayv2_vpc_link.eks_vpc_link.id
 
   integration_uri = aws_lb_listener.alb_listener.arn
 }
