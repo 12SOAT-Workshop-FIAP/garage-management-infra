@@ -8,9 +8,10 @@ module "vpc" {
 module "security" {
   source = "./modules/security"
 
-  vpc_id       = module.vpc.vpc_id
-  project_name = var.project_name
+  vpc_id               = module.vpc.vpc_id
+  project_name         = var.project_name
   private_subnet_cidrs = module.vpc.private_subnet_cidrs
+  app_node_port        = var.app_node_port
 }
 
 module "eks" {
@@ -29,4 +30,18 @@ module "ecr" {
   source = "./modules/ecr"
 
   repository_name = var.project_name
+}
+
+module "api_gateway" {
+  source = "./modules/api-gateway"
+
+  project_name          = var.project_name
+  vpc_id                = module.vpc.vpc_id
+  private_subnet_ids    = module.vpc.private_subnet_ids
+  eks_cluster_name      = module.eks.cluster_name
+  alb_security_group_id = module.security.alb_sg_id
+
+  lambda_auth_arn = var.lambda_auth_arn
+
+  app_node_port = var.app_node_port
 }
