@@ -44,22 +44,22 @@ resource "aws_api_gateway_vpc_link" "eks_vpc_link" {
   target_arns = [aws_lb.internal_alb.arn]
 }
 
-resource "awsapigatewayv2_api" "main" {
+resource "aws_apigatewayv2_api" "main" {
   name          = "${var.project_name}-http-api"
   protocol_type = "HTTP"
 }
 
 # --- Integrações ---
 
-resource "awsapigatewayv2_integration" "lambda_auth" {
-  api_id                 = awsapigatewayv2_api.main.id
+resource "aws_apigatewayv2_integration" "lambda_auth" {
+  api_id                 = aws_apigatewayv2_api.main.id
   integration_type       = "AWS_PROXY"
   integration_uri        = var.lambda_auth_arn
   payload_format_version = "2.0"
 }
 
-resource "awsapigatewayv2_integration" "eks_app" {
-  api_id             = awsapigatewayv2_api.main.id
+resource "aws_apigatewayv2_integration" "eks_app" {
+  api_id             = aws_apigatewayv2_api.main.id
   integration_type   = "HTTP_PROXY"
   integration_method = "ANY"
 
@@ -72,20 +72,20 @@ resource "awsapigatewayv2_integration" "eks_app" {
 # --- Criar as Rotas ---
 
 # Rotas de /auth/* vão para a Lambda
-resource "awsapigatewayv2_route" "auth_wildcard" {
-  api_id    = awsapigatewayv2_api.main.id
+resource "aws_apigatewayv2_route" "auth_wildcard" {
+  api_id    = aws_apigatewayv2_api.main.id
   route_key = "ANY /auth/{proxy+}"
-  target    = "integrations/${awsapigatewayv2_integration.lambda_auth.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda_auth.id}"
 }
 
-resource "awsapigatewayv2_route" "default" {
-  api_id    = awsapigatewayv2_api.main.id
+resource "aws_apigatewayv2_route" "default" {
+  api_id    = aws_apigatewayv2_api.main.id
   route_key = "$default"
-  target    = "integrations/${awsapigatewayv2_integration.eks_app.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.eks_app.id}"
 }
 
-resource "awsapigatewayv2_stage" "default" {
-  api_id      = awsapigatewayv2_api.main.id
+resource "aws_apigatewayv2_stage" "default" {
+  api_id      = aws_apigatewayv2_api.main.id
   name        = "$default"
   auto_deploy = true
 }
