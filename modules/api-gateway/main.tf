@@ -82,7 +82,7 @@ resource "aws_apigatewayv2_integration" "eks_app" {
   connection_type = "VPC_LINK"
   connection_id   = aws_apigatewayv2_vpc_link.eks_vpc_link.id
 
-  integration_uri = "http://${aws_lb.internal_alb.dns_name}"
+  integration_uri = aws_lb_listener.alb_listener.arn
 }
 
 # --- Criar as Rotas ---
