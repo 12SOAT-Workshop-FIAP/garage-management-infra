@@ -21,10 +21,6 @@ jobs:
     name: Terraform Provisioning
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: garage-management-infra
-
     steps:
       - name: 1. Checkout Code
         uses: actions/checkout@v4
