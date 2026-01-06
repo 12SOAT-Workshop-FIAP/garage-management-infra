@@ -95,15 +95,8 @@ resource "aws_lambda_permission" "api_gw_auth" {
 
 # --- Criar as Rotas ---
 
-# Captura apenas /auth
-resource "aws_apigatewayv2_route" "auth_wildcard" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "ANY /auth"
-  target    = "integrations/${aws_apigatewayv2_integration.lambda_auth.id}"
-}
-
 # Captura /auth/login, /auth/refresh, etc.
-resource "aws_apigatewayv2_route" "auth_proxy" {
+resource "aws_apigatewayv2_route" "auth_wildcard" {
   api_id    = aws_apigatewayv2_api.main.id
   route_key = "ANY /auth/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda_auth.id}"
