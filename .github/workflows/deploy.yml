@@ -2,8 +2,9 @@ name: CI/CD - Deploy Infraestructure
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
     paths:
       - "garage-management-infra/**"
   workflow_dispatch:
