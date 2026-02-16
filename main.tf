@@ -30,7 +30,12 @@ module "eks" {
 module "ecr" {
   source = "./modules/ecr"
 
-  repository_name = var.project_name
+  repository_names = [
+    var.project_name,
+    "garage-os-service",
+    "garage-billing-service",
+    "garage-execution-service",
+  ]
 }
 
 module "api_gateway" {
