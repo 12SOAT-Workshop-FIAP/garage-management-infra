@@ -27,11 +27,6 @@ module "eks" {
   eks_nodes_sg_id    = module.security.eks_nodes_sg_id
 }
 
-import {
-  to = module.ecr.aws_ecr_repository.microservices["garage-os-service"]
-  id = "garage-os-service"
-}
-
 module "ecr" {
   source = "./modules/ecr"
 
