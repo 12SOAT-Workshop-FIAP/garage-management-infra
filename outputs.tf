@@ -8,9 +8,14 @@ output "eks_cluster_name" {
   value       = module.eks.cluster_name
 }
 
-output "ecr_repository_urls" {
-  description = "URLs dos repositórios ECR para as imagens Docker."
-  value       = module.ecr.repository_urls
+output "ecr_repository_url" {
+  description = "URL do repositorio ECR principal."
+  value       = module.ecr.repository_url
+}
+
+output "ecr_microservice_urls" {
+  description = "URLs dos repositórios ECR dos microserviços."
+  value       = module.ecr.microservice_repository_urls
 }
 
 output "private_subnet_ids" {

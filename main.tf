@@ -30,8 +30,8 @@ module "eks" {
 module "ecr" {
   source = "./modules/ecr"
 
-  repository_names = [
-    var.project_name,
+  repository_name = var.project_name
+  microservice_names = [
     "garage-os-service",
     "garage-billing-service",
     "garage-execution-service",
