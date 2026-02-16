@@ -28,5 +28,21 @@ variable "alb_security_group_id" {
 
 variable "app_node_port" {
   type        = number
-  description = "Porta do NodePort definida no serviço K8s (ex: 31000)."
+  description = "Porta do NodePort definida no serviço K8s principal (ex: 31000)."
 }
+
+variable "os_node_port" {
+  type        = number
+  description = "Porta do NodePort do os-service (ex: 31001)."
+}
+
+variable "billing_node_port" {
+  type        = number
+  description = "Porta do NodePort do billing-service (ex: 31002)."
+}
+
+variable "execution_node_port" {
+  type        = number
+  description = "Porta do NodePort do execution-service (ex: 31003)."
+}
+

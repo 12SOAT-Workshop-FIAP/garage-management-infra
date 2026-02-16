@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "garagemanagement-terraform-backend-3"
+    bucket = "garagemanagement-terraform-backend-4"
     key    = "garage-management-infra/terraform.tfstate"
     region = "us-east-1"
 

@@ -19,6 +19,24 @@ variable "app_node_port" {
   default     = 31000
 }
 
+variable "os_node_port" {
+  description = "NodePort do os-service."
+  type        = number
+  default     = 31001
+}
+
+variable "billing_node_port" {
+  description = "NodePort do billing-service."
+  type        = number
+  default     = 31002
+}
+
+variable "execution_node_port" {
+  description = "NodePort do execution-service."
+  type        = number
+  default     = 31003
+}
+
 variable "lambda_auth_arn" {
   description = "ARN da função Lambda de auth."
   type        = string

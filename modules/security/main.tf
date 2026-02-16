@@ -44,7 +44,7 @@ resource "aws_security_group" "alb_internal" {
 resource "aws_security_group_rule" "eks_nodes_ingress_alb" {
   type                     = "ingress"
   from_port                = var.app_node_port
-  to_port                  = var.app_node_port
+  to_port                  = var.app_node_port_max
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.alb_internal.id
   security_group_id        = aws_security_group.eks_nodes.id
@@ -54,7 +54,7 @@ resource "aws_security_group_rule" "eks_nodes_ingress_alb" {
 resource "aws_security_group_rule" "alb_internal_egress_eks" {
   type                     = "egress"
   from_port                = var.app_node_port
-  to_port                  = var.app_node_port
+  to_port                  = var.app_node_port_max
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.eks_nodes.id
   security_group_id        = aws_security_group.alb_internal.id

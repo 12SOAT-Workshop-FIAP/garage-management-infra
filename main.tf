@@ -12,6 +12,7 @@ module "security" {
   project_name         = var.project_name
   private_subnet_cidrs = module.vpc.private_subnet_cidrs
   app_node_port        = var.app_node_port
+  app_node_port_max    = var.execution_node_port
 }
 
 module "eks" {
@@ -43,5 +44,8 @@ module "api_gateway" {
 
   lambda_auth_arn = var.lambda_auth_arn
 
-  app_node_port = var.app_node_port
+  app_node_port       = var.app_node_port
+  os_node_port        = var.os_node_port
+  billing_node_port   = var.billing_node_port
+  execution_node_port = var.execution_node_port
 }
