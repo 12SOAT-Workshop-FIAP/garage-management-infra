@@ -15,3 +15,9 @@ variable "app_node_port" {
   description = "Porta NodePort do K8s."
   type        = number
 }
+
+variable "app_node_port_max" {
+  description = "Porta máxima do range NodePort (para multi-serviço)."
+  type        = number
+  default     = 31003
+}
