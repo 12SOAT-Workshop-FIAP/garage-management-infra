@@ -32,16 +32,6 @@ import {
   id = "garage-os-service"
 }
 
-import {
-  to = module.ecr.aws_ecr_repository.microservices["garage-billing-service"]
-  id = "garage-billing-service"
-}
-
-import {
-  to = module.ecr.aws_ecr_repository.microservices["garage-execution-service"]
-  id = "garage-execution-service"
-}
-
 module "ecr" {
   source = "./modules/ecr"
 
