@@ -37,7 +37,7 @@ resource "aws_lb_target_group" "os_service_tg" {
 
   health_check {
     enabled             = true
-    path                = "os/health"
+    path                = "/os/health"
     port                = "traffic-port"
     protocol            = "HTTP"
     matcher             = "200-299"
@@ -57,7 +57,7 @@ resource "aws_lb_target_group" "billing_service_tg" {
 
   health_check {
     enabled             = true
-    path                = "billing/health"
+    path                = "/billing/health"
     port                = "traffic-port"
     protocol            = "HTTP"
     matcher             = "200-299"
@@ -77,7 +77,7 @@ resource "aws_lb_target_group" "execution_service_tg" {
 
   health_check {
     enabled             = true
-    path                = "execution/health"
+    path                = "/execution/health"
     port                = "traffic-port"
     protocol            = "HTTP"
     matcher             = "200-299"
