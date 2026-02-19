@@ -3,3 +3,4 @@
 **/.terraform
 **/terraform.tfvars
 !**/terraform.tfvars.example
+**/*/.terraform.lock.hcl
